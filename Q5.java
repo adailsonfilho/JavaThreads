@@ -3,6 +3,7 @@ Construa uma classe que implementa uma fila segura para um número indeterminado
 – Se apenas uma thread tentar inserir ou remover um elemento, ela consegue
 – Se mais que uma estiver tentando ao mesmo tempo, uma consegue e as outras esperam. A próxima só conseguirá realizar a operação quando a anterior tiver terminado.
 */
+import java.util.Random;
 
 public class Q5{
 
@@ -11,18 +12,42 @@ public class Q5{
 		int nThreads = 4;
 		int itemsPerThread = 10;
 
-		int[][] items = new int[nThreads][itemsPerThread];
+		Random randGen = new Random();
+
+		Operation[][] ops = new Operation[nThreads][itemsPerThread];
 
 		for(int i = 0; i < nThreads;i++){
 			for(int j = 0; j < itemsPerThread ; j++){
-				items[i][j] (i+1)*(j+1);
+				ops[i][j] = new Operation();
+				if(randGen.nextDouble() > 0.7) ops[i][j].setGet();
+				else ops[i][j].setPut((1+i)*(1+j));
 			}
 		}
 
 		for(int i = 0; i< nThreads ; i++){
-			(new ThreadQueuer(q)).start();
+			(new ThreadQueuer(q,ops[i])).start();
 		}
 
+	}
+
+}
+
+class Operation{
+	public int e;
+	public String op;
+
+	public Operation(){
+		this.e = -1;
+	}
+
+	public void setPut(int e){
+		this.e = e;
+		this.op = "put";
+	}
+
+	public void setGet(){
+		this.e = -1;
+		this.op = "get";
 	}
 
 }
@@ -40,7 +65,7 @@ class Queue{
 		}
 	}
 
-	synchronized public int get(){
+	synchronized public int get() throws Exception{
 		if(first == null){
 			throw (new Exception("A fila ja acabou camarada"));
 		}
@@ -60,12 +85,30 @@ class Node{
 
 class ThreadQueuer extends Thread{
 	private Queue q;
-	public ThreadQueuer(Queue q){
+	private Operation[] ops;
+	public ThreadQueuer(Queue q, Operation[] ops){
 		this.q = q;
+		this.ops = ops;
 	}
 
 	public void run(){
+		for(int i = 0; i < ops.length ; i++ ){
+			try{
+				execute(ops[i]);
+			}catch(Exception e){
+				System.out.println("Ops! Houve um erro: "+e.getMessage());
+			}
+		}
+	}
 
+	private void execute(Operation op) throws Exception{
+		if( op.op == "put"){
+			this.put(op.e);
+		}else if(op.op == "get"){
+			this.get();
+		}else{
+			throw (new Exception("Operation Type Invalid For Queue"));
+		}
 	}
 
 	private void put(int e){
@@ -73,9 +116,13 @@ class ThreadQueuer extends Thread{
 		System.out.println("put: "+e);
 	}
 
-	private int get(){
-		int v = q.get();
-		System.out.println("get: "+v);
+	private void get(){
+		try{
+			int v = q.get();
+			System.out.println("get: "+v);
+		}catch(Exception e){
+			System.out.println("Ops! Houve um erro: "+e.getMessage());
+		}
 	}
 
 }
