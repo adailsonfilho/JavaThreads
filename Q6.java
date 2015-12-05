@@ -11,13 +11,13 @@ public class Q6{
 	public static void main(String[] args){
 
 		Tree t = new Tree();
-		int nThreads = 10;
+		int nThreads = 50;
 
 		ThreadTree[] threads = new ThreadTree[nThreads];
 
 
 		for(int i = 0; i < nThreads ; i++){
-			threads[i] = new ThreadTree(t);
+			threads[i] = new ThreadTree(i, t);
 			threads[i].start();
 		}
 
@@ -36,16 +36,19 @@ public class Q6{
 }
 
 class ThreadTree extends Thread{
+	int id;
 	Tree t;
 	int[] items;
 	Random randGen = new Random();
 
-	public ThreadTree(Tree t){
+	public ThreadTree(int id,Tree t){
+		this.id = id;
 		this.t = t;
 	}
 
 	public void run(){
-		for(int i = 0; i < 2000; i++){
+		int i = 0;
+		for(; i < 2000; i++){
 			int value = randGen.nextInt(10000);
 			t.insert(value);
 		}
@@ -63,9 +66,9 @@ class Tree{
 		this.root = null;
 	}
 
-	public void insert(int value){
+	public synchronized void insert(int value){
 		if(this.root == null){
-				this.root = new Node(value);
+			this.root = new Node(value);
 		}else{
 			this.root.insert(value);
 		}
