@@ -13,19 +13,10 @@ public class Q5{
 		int itemsPerThread = 10;
 		Random randGen = new Random();
 
-		//Class operation for simulate some dinamic activities over the queue
+		//Class operation for simulate some dynamic activities over the queue
 		Operation[][] ops = new Operation[nThreads][itemsPerThread];
 
-		// //FOR TESTING
-		// int[][] numbers = new int[nThreads][itemsPerThread];
-
-		// //Numbers hard coded 
-		// numbers[0] = new int[]{1,2,3,4,5,6,7,8,9,10};
-		// numbers[1] = new int[]{11,12,13,14,15,16,17,18,19,20};
-		// numbers[2] = new int[]{21,22,23,24,25,26,27,28,29,30};
-		// numbers[3] = new int[]{31,32,33,34,35,36,37,38,39,40};
-		
-
+		//Setting up simulation
 		for(int i = 0; i < nThreads;i++){
 			for(int j = 0; j < itemsPerThread ; j++){
 				ops[i][j] = new Operation();
