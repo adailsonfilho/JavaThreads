@@ -1,3 +1,6 @@
+/*Modifique o programa do exercício anterior (Q6) para tornar mais fina a granularidade do travamento. Em outras palavras, faça com que o travamento seja feito por nó, ao invés de afetar a árvore inteira. 
+– Compare o desempenho desta versão com o da sequencial e o da que usa apenas uma trava*/
+
 /*
 Defina uma classe ArvoreBusca que implementa uma árvore de busca onde é possível realizar inserções de elementos. Essa estrutura de dados deve funcionar com várias threads. Faça o que é pedido: 
 – Implemente um método main() que cria 50 threads onde cada uma insere 2000 números aleatórios nessa árvore.
@@ -6,8 +9,9 @@ Defina uma classe ArvoreBusca que implementa uma árvore de busca onde é possí
 */
 
 import java.util.Random;
+import java.util.concurrent.locks.*;
 
-public class Q6{
+public class Q7{
 	public static void main(String[] args){
 
 		Tree t = new Tree();
@@ -35,7 +39,7 @@ public class Q6{
 		System.out.println(size);
 
 		long time = (System.currentTimeMillis() - millis);
-		System.out.println("Time: "+time);
+		System.out.println("Time: "+time);	
 	}
 }
 
@@ -66,16 +70,34 @@ class ThreadTree extends Thread{
 class Tree{
 	Node root;
 
+	private Lock treeLock = new ReentrantLock();
+
 	public Tree(){
 		this.root = null;
 	}
 
-	public synchronized void insert(int value){
-		if(this.root == null){
-			this.root = new Node(value);
-		}else{
-			this.root.insert(value);
+	public void insert(int value){
+
+		treeLock.lock();
+		//garantee only one root initialization
+		try{
+
+			if(this.root == null){
+				this.root = new Node(value);
+				System.out.println("Root created");
+				treeLock.unlock();
+			}else{
+				this.root.lock();
+				treeLock.unlock();				
+				this.root.insert(value);
+			}
+
+		}catch(Exception e){
+			e.printStackTrace();
+			treeLock.unlock();
 		}
+
+		//try insert if root is not null
 	}
 
 	public int countNodes(){
@@ -92,20 +114,51 @@ class Node{
 	public Node left;
 	public Node right;
 
+	private Lock l = new ReentrantLock();
+
 	public Node(int value){
 		this.value = value;
 		this.left = null;
 		this.right = null;
 	}
 
+	public void lock(){
+		this.l.lock();
+	}
+
+	public void unlock(){
+		this.l.unlock();
+	}
+
 	public void insert(int value){
-		if(value > this.value){
-			if(this.right == null) this.right = new Node(value);
-			else this.right.insert(value);
-		}else if(value <= this.value){
-			if(this.left == null) this.left = new Node(value);
-			else this.left.insert(value);
-		}//se for igual nao
+
+		try{
+			if(value > this.value){
+				if(this.right == null){
+					this.right = new Node(value);
+					unlock();
+				}
+				else{
+					this.right.lock();
+					unlock();
+					this.right.insert(value);
+				}
+			}else if(value <= this.value){
+				if(this.left == null){
+					this.left = new Node(value);
+					unlock();
+				}
+				else{
+					this.left.lock();
+					unlock();
+					this.left.insert(value);
+				}
+			}//se for igual nao adiciona
+		}catch(Exception e){
+			e.printStackTrace();
+			unlock();
+		}
+		
 	}
 
 	public int countNodes(){
