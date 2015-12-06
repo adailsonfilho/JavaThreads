@@ -1,15 +1,9 @@
 /*Modifique o programa do exercício anterior (Q6) para tornar mais fina a granularidade do travamento. Em outras palavras, faça com que o travamento seja feito por nó, ao invés de afetar a árvore inteira. 
 – Compare o desempenho desta versão com o da sequencial e o da que usa apenas uma trava*/
 
-/*
-Defina uma classe ArvoreBusca que implementa uma árvore de busca onde é possível realizar inserções de elementos. Essa estrutura de dados deve funcionar com várias threads. Faça o que é pedido: 
-– Implemente um método main() que cria 50 threads onde cada uma insere 2000 números aleatórios nessa árvore.
-– Meça o tempo de execução do seu programa, comparando-o com o de uma execução puramente sequencial.
-– O que significa “funcionar com várias threads?
-*/
-
 import java.util.Random;
-import java.util.concurrent.locks.*;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class Q7{
 	public static void main(String[] args){
