@@ -1,3 +1,5 @@
+import java.util.Random;
+
 // A correct implementation of a producer and consumer. 
 class Q { 
 	int buffer; 
@@ -6,6 +8,7 @@ class Q {
 	synchronized int get() { 
 		if(!bufferUpdated) 
 			try { 
+				System.out.println("Ops! Not ready yet, in production... Keep waiting");
 				wait(); 
 			}catch(InterruptedException e) { 
 				System.out.println("InterruptedException caught"); 
@@ -20,6 +23,7 @@ class Q {
 	synchronized void put(int n) { 
 		if(bufferUpdated)
 			try { 
+				System.out.println("Ops! Not ready yet, consuming... Keep waiting");
 				wait(); 
 			} catch(InterruptedException e) { 
 				System.out.println("InterruptedException caught"); 
@@ -31,23 +35,26 @@ class Q {
 	} 
 }
 
-class Producer implements Runnable { 
+class Producer implements Runnable {
 
 	Q q;
+	Random randGen = new Random();
 
-	Producer(Q q) { 
+	Producer(Q q) {
 		this.q = q; 
 		new Thread(this, "Producer").start(); 
 	} 
 
-	public void run() { 
+	public void run() {
 		int i = 0; 
 		while(true) {
+
 			try{//simulate production time
-				Thread.sleep(1000);
+				Thread.sleep(1000*(randGen.nextInt(5)+1));
 			}catch(Exception e){
 				e.printStackTrace();
 			}
+
 			q.put(i++); 
 		} 
 	} 
@@ -55,7 +62,7 @@ class Producer implements Runnable {
 
 class Consumer implements Runnable { 
 	Q q;
-
+	Random randGen = new Random();
 	Consumer(Q q) { 
 		this.q = q; 
 		new Thread(this, "Consumer").start(); 
@@ -63,6 +70,12 @@ class Consumer implements Runnable {
 
 	public void run() { 
 		while(true) {
+
+			try{//simulate production time
+				Thread.sleep(1000*(randGen.nextInt(5)+1));
+			}catch(Exception e){
+				e.printStackTrace();
+			}
 			q.get(); 
 		} 
 	} 
