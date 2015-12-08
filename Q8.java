@@ -52,7 +52,7 @@ class ThreadArrayOperator extends Thread{
 
 	public void run(){
 		while(true){
-			// System.out.println("Thread "+id+" attempted");
+			// System.out.println("Thread "+id+" attempted");8
 			//simulate array operations
 			double randomOperation = randGen.nextDouble();
 			if( randomOperation < 0.10){
