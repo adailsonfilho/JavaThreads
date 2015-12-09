@@ -1,7 +1,17 @@
 import java.util.Random;
 
-// A correct implementation of a producer and consumer. 
-class Q { 
+// A correct implementation of a producer and consumer.
+
+public class ProducerConsumer {
+	public static void main(String args[]) { 
+		Queue q = new Queue(); 
+		new Producer(q); 
+		new Consumer(q); 
+		System.out.println("Press Control-C to stop."); 
+	} 
+}
+
+class Queue { 
 	int buffer; 
 	boolean bufferUpdated = false; 
 
@@ -37,10 +47,10 @@ class Q {
 
 class Producer implements Runnable {
 
-	Q q;
+	Queue q;
 	Random randGen = new Random();
 
-	Producer(Q q) {
+	Producer(Queue q) {
 		this.q = q; 
 		new Thread(this, "Producer").start(); 
 	} 
@@ -50,7 +60,7 @@ class Producer implements Runnable {
 		while(true) {
 
 			try{//simulate production time
-				Thread.sleep(1000*(randGen.nextInt(5)+1));
+				Thread.sleep(500*(randGen.nextInt(3)+1));
 			}catch(Exception e){
 				e.printStackTrace();
 			}
@@ -61,9 +71,9 @@ class Producer implements Runnable {
 }
 
 class Consumer implements Runnable { 
-	Q q;
+	Queue q;
 	Random randGen = new Random();
-	Consumer(Q q) { 
+	Consumer(Queue q) { 
 		this.q = q; 
 		new Thread(this, "Consumer").start(); 
 	} 
@@ -72,20 +82,11 @@ class Consumer implements Runnable {
 		while(true) {
 
 			try{//simulate production time
-				Thread.sleep(1000*(randGen.nextInt(5)+1));
+				Thread.sleep(500*(randGen.nextInt(3)+1));
 			}catch(Exception e){
 				e.printStackTrace();
 			}
 			q.get(); 
 		} 
-	} 
-}
-
-class ProducerConsumer { 
-	public static void main(String args[]) { 
-		Q q = new Q(); 
-		new Producer(q); 
-		new Consumer(q); 
-		System.out.println("Press Control-C to stop."); 
 	} 
 }

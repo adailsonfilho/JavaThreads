@@ -11,7 +11,7 @@ public class Q6{
 	public static void main(String[] args){
 
 		Tree t = new Tree();
-		int nThreads = 50;
+		int nThreads = 10;
 		long millis = System.currentTimeMillis();
 
 		ThreadTree[] threads = new ThreadTree[nThreads];
@@ -52,7 +52,7 @@ class ThreadTree extends Thread{
 
 	public void run(){
 		int i = 0;
-		for(; i < 2000; i++){
+		for(; i < 100000; i++){
 			int value = randGen.nextInt(10000);
 			t.insert(value);
 		}
