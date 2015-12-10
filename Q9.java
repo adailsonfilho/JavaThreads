@@ -2,6 +2,7 @@
 */
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.Random;
 
 public class Q9{
 	public static void main(String[] args) throws Exception{
@@ -28,11 +29,11 @@ public class Q9{
 
 			//fork1
 			Fork fl = fs[i];
-			if(i == 0) fl = fs[p-1];
 			
 			//fork2
-			Fork fr = fs[i+1];
-			if(i == 0) fr = fs[0];
+			int index_fr = i+1;
+			if(i == p-1) index_fr = 0;
+			Fork fr = fs[index_fr];
 			
 			ps[i].f_left = fl;
 			ps[i].f_right = fr;
@@ -61,6 +62,8 @@ class Philosopher extends Thread{
 	Philosopher p_left;
 	Philosopher p_right;
 
+	Random randGen;
+
 	boolean eating;
 
 	public Philosopher(int id){
@@ -68,6 +71,7 @@ class Philosopher extends Thread{
 		this.f_left = f_left;
 		this.f_right = f_right;
 		this.eating = false;
+		this.randGen =  new Random();
 	}
 
 	public void run(){
@@ -77,9 +81,18 @@ class Philosopher extends Thread{
 				eating = false;
 			}else{
 				eating = true;
-				System.out.println("Philosopher "+this.id+" eating with forks "+this.f_left.id+" e "+this.f_right.id);
+				System.out.println("Philosopher "+this.id);
+				f_left.use();
+				f_right.use();				
 			}
-			eating = false;
+			try{
+				int thinking = randGen.nextInt(300)+1;
+				//pensando
+				sleep(thinking);
+			}catch(Exception e){
+				eating = false;	
+				e.printStackTrace();
+			}			
 		}
 
 	}
@@ -87,8 +100,14 @@ class Philosopher extends Thread{
 
 class Fork{
 	int id;
+	int use;
 	public Fork(int id){
 		this.id = id;
+	}
+
+	public synchronized void use(){
+		use++;
+		System.out.println("Using fork "+id+" for the "+use+"th time");		
 	}
 
 }

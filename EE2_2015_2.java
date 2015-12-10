@@ -6,80 +6,68 @@
 import java.util.concurrent.locks.*;
 import java.util.Random;
 
-public class EE2_2015_2{//Rooms
-
+public class EE2_2015_2{
 	public static void main(String[] args){
+		int m = 10;
+		Rooms rooms = new Rooms(10);
+		Person[] person = new Person[m*2];
 
-		Random randGen = new Random();
-
-		int nRooms = randGen.nextInt(20)+2;
-		Room[] rooms = new Room[nRooms];
-
-		int nThreads = randGen.nextInt(20)+2;
-
-		System.out.println("Today are " nRooms+" rooms for "+nThreads +" party members.");
-
-		for(int i = 0; i < nRooms; i++){
-			rooms[i] = new Room(i);
-		}
-
-		for(int i = 0; i < nThreads; i++){
-			(new PartyMember()).start();
+		for(int i = 0; i < m*2; i++){
+			person[i] = new Person(rooms);
+			person[i].start();
 		}
 	}
-
 }
 
-class PartyMember extends Thread{
-	int id;
-	Room[] rooms;
-	Lock[] locks
-
-	Random randGen = new Random();
-
-	public PartyMember(int id, Room[] rooms){
-		this.id = id;
+class Person extends Thread{
+	Rooms rooms;
+	public Person(Rooms rooms){
 		this.rooms = rooms;
-		this.locks = locks;
 	}
 
 	public void run(){
 		while(true){
-			//random room to try get in
-			int index = randGen.nextInt(rooms.length);
-			while(){
-				rooms[index].tryGetIn();
-			}
+			rooms.getIn();
+			rooms.leave();
 		}
 	}
 }
 
-class Room {
+class Rooms{
 
-	int id;
-	int threads;
-	private Lock lock;
-	public Room(Int id){
-		this.id = id;
-		this.threads = 0;
-		this.lock = new ReentrantLock();
+	int n;
+	int m;
+	int currentRoom;
+	Random randGen;
+
+	public Rooms(int m){
+		this.n = 0;
+		this.m = m;
+		this.currentRoom = -1;
+		this.randGen = new Random();
 	}
 
-	public boolean tryGetIn(){
-		lock.lock();
-		try{
-			threads++;
-			while(){
-					wait();
-			}
-		}finally{
-			lock.unlock();
+	public synchronized void getIn(){
+
+		if(currentRoom == -1){
+			//select randomRoomToTryGetIn
+			int r = randGen.nextInt(m);
+			currentRoom = r;
 		}
-		return true;
+		n++;
+		System.out.println(n+" threads in the room "+currentRoom);
+		try{
+			Thread.sleep(randGen.nextInt(300)+100);
+		}catch(Exception e){
+			e.printStackTrace();
+		}
 	}
 
-	public synchronized getOut(){
-		threads--;
+	public synchronized void leave(){
+		n--;
+		if(n == 0){
+			currentRoom = -1;
+			System.out.println("All rooms free");
+		}
 	}
-
 }
