@@ -1,5 +1,5 @@
-# JavaThreds
-Practicing Threads in Java
+# JavaThreads
+Solving Java Threads excercises.
 
-Todo
+Issues
 [ ] - Consistence Issue in Q9.java
